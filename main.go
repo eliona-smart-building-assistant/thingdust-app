@@ -16,13 +16,15 @@
 package main
 
 import (
+	"template/conf"
+	"template/eliona"
+	"time"
+
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
-	"template/conf"
-	"template/eliona"
-	"time"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 )
 
 // The main function starts the app by starting all services necessary for this app and waits
@@ -35,9 +37,11 @@ func main() {
 
 	// Init the app before the first run.
 	app.Init(db.Pool(), app.AppName(),
+		asset.InitAssetTypeFile("eliona/asset-type-thingdust_space.json"),
 		app.ExecSqlFile("conf/init.sql"),
 		conf.InitConfiguration,
 		eliona.InitEliona,
+		
 	)
 
 	// Starting the service to collect the data for this app.
