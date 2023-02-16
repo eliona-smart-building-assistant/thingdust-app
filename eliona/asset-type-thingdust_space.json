@@ -1,0 +1,47 @@
+
+{
+	"attributes": [
+        {
+			"enable": true,
+			"name": "occupancy",
+			"subtype": "input",
+			"translation": {
+				"de": "Belegung",
+				"en": "Occupancy"
+			},
+            "unit": "number of people",
+			"type": "people-count"
+			
+		},
+        {
+			"enable": true,
+			"name": "temperature",
+			"subtype": "input",
+			"translation": {
+				"de": "Temperatur",
+				"en": "Temperature"
+			},
+			"unit": "°C",
+			"type": "temperature"
+		},
+		{
+			"enable": true,
+			"name": "humidity",
+			"subtype": "input",
+			"translation": {
+				"de": "Luftfeuchtigkeit",
+				"en": "Humidity"
+			},
+			"unit": "%",
+			"type": "humidity"
+		}
+	],
+	"custom": true,
+	"name": "thingdust_space",
+	"translation": {
+		"de": "Ein thingdust Raum",
+		"en": "A thingdust space"
+	},
+	"urldoc": "https://thingdust.com/energy-saver/",
+	"vendor": "thingdust"
+}
