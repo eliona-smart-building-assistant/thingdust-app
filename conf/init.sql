@@ -22,21 +22,23 @@ create schema if not exists thingdust;
 -- This table should be made editable by eliona frontend.
 create table if not exists thingdust.config
 (
-    config_id           json      not null,
-    api_endpoint        text,
-    api_key             text,
+    config_id           bigserial primary key,
+    api_endpoint        text not null,
+    api_key             text not null,
     enable              boolean   default false,
     refresh_interval    integer default 60,
-    request_timeout     integer not null default 120,
+    request_timeout     integer default 120,
     active              boolean default false,
-    proj_ids            text[]
+    project_ids            text[]
 );
 
 create table if not exists thingdust.spaces
 (
-    project_id      text,
-    asset_id        integer,
-    space_name      text
+    config_id       bigint not null,
+    project_id      text not null,
+    asset_id        integer not null,
+    space_name      text not null,
+    primary key(config_id, project_id, asset_id, space_name)
 );
 
 
