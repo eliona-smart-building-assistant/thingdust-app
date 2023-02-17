@@ -1,5 +1,5 @@
-output   = "db/template"
-pkgname  = "dbtemplate"
+output   = "db/thingdust"
+pkgname  = "dbthingdust"
 add-global-variants = true
 wipe     = true
 no-tests = true
@@ -11,10 +11,11 @@ host   = "localhost"
 port   = 5432
 user   = "postgres"
 pass   = "secret"
-schema = "template"
+schema = "thingdust"
 sslmode = "disable"
 whitelist = [
-    "example_table"
+    "config",
+    "spaces"
 ]
 
 [[types]]

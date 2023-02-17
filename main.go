@@ -16,8 +16,8 @@
 package main
 
 import (
-	"template/conf"
-	"template/eliona"
+	"thingdust/conf"
+	"thingdust/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/app"

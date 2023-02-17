@@ -20,8 +20,8 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 	nethttp "net/http"
-	"template/apiserver"
-	"template/apiservices"
+	"thingdust/apiserver"
+	"thingdust/apiservices"
 )
 
 // doAnything is the main app function which is called periodically
@@ -37,5 +37,7 @@ func listenApi() {
 	http.ListenApiWithOs(&nethttp.Server{Addr: ":" + common.Getenv("API_SERVER_PORT", "3000"), Handler: apiserver.NewRouter(
 		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
 		apiserver.NewVersionApiController(apiservices.NewVersionApiService()),
+		apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
+		apiserver.NewSpacesApiController(apiservices.NewSpacesApiService()),
 	)})
 }
