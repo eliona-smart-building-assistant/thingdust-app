@@ -118,13 +118,13 @@ paths:
           description: Successfully deletes endpoint
   
   
-  /asset-mappings:
+  /spaces:
     get:
       tags:
-        - Asset Mapping
-      summary: List all mapped spaces (assets)
-      description: Delivers a List of all assets mapped to spaces
-      operationId: getAssetMappings
+        - Spaces
+      summary: List all spaces mapped to eliona assets
+      description: Delivers a list of all assets mapped to spaces
+      operationId: getSpaces
       parameters:
         - name: configId
           in: query
@@ -234,7 +234,7 @@ components:
     config-id:
       name: config-id
       in: path
-      description: The id of the configured Hailo FDS endpoint
+      description: The id of the configured endpoint
       example: 4711
       required: true
       schema:
@@ -313,3 +313,4 @@ components:
           type: string
           description: References to the thingdust space 
           example: thingdust room_3
+          
