@@ -11,9 +11,10 @@ package apiservices
 
 import (
 	"context"
-	"errors"
+	//"errors"
 	"net/http"
 	"thingdust/apiserver"
+	"thingdust/conf"
 )
 
 // ConfigurationApiService is a service that implements the logic for the ConfigurationApiServicer
@@ -35,7 +36,16 @@ func (s *ConfigurationApiService) DeleteConfigurationById(ctx context.Context, c
 	//TODO: Uncomment the next line to return response Response(204, {}) or use other options such as http.Ok ...
 	//return Response(204, nil),nil
 
-	return apiserver.Response(http.StatusNotImplemented, nil), errors.New("DeleteConfigurationById method not implemented")
+	count, err := conf.DeleteConfig(ctx, configId)
+	if err != nil {
+		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	if count == 0 {
+		return apiserver.ImplResponse{Code: http.StatusNotFound}, err
+	}
+	return apiserver.ImplResponse{Code: http.StatusNoContent}, err
+
+	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("DeleteConfigurationById method not implemented")
 }
 
 // GetConfigurationById - Get endpoint
@@ -46,7 +56,16 @@ func (s *ConfigurationApiService) GetConfigurationById(ctx context.Context, conf
 	//TODO: Uncomment the next line to return response Response(200, Configuration{}) or use other options such as http.Ok ...
 	//return Response(200, Configuration{}), nil
 
-	return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetConfigurationById method not implemented")
+	config, err := conf.GetConfig(context.Background(), configId)
+	if err != nil {
+		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	if config == nil {
+		return apiserver.ImplResponse{Code: http.StatusNotFound}, err
+	}
+	return apiserver.Response(http.StatusOK, config), nil
+
+	// return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetConfigurationById method not implemented")
 }
 
 // GetConfigurations - Get all endpoint configurations
@@ -57,7 +76,13 @@ func (s *ConfigurationApiService) GetConfigurations(ctx context.Context) (apiser
 	//TODO: Uncomment the next line to return response Response(200, []Configuration{}) or use other options such as http.Ok ...
 	//return Response(200, []Configuration{}), nil
 
-	return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetConfigurations method not implemented")
+	configs, err := conf.GetConfigs(ctx)
+	if err != nil {
+		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	return apiserver.Response(http.StatusOK, configs), nil
+
+	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetConfigurations method not implemented")
 }
 
 // PostConfiguration - Creates an example configuration
@@ -68,7 +93,13 @@ func (s *ConfigurationApiService) PostConfiguration(ctx context.Context, configu
 	//TODO: Uncomment the next line to return response Response(201, Configuration{}) or use other options such as http.Ok ...
 	//return Response(201, Configuration{}), nil
 
-	return apiserver.Response(http.StatusNotImplemented, nil), errors.New("PostConfiguration method not implemented")
+	insertedConfig, err := conf.InsertConfig(ctx, configuration)
+	if err != nil {
+		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	return apiserver.Response(http.StatusCreated, insertedConfig), nil
+
+	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("PostConfiguration method not implemented")
 }
 
 // PutConfigurationById - Updates an endpoint
@@ -79,5 +110,13 @@ func (s *ConfigurationApiService) PutConfigurationById(ctx context.Context, conf
 	//TODO: Uncomment the next line to return response Response(200, Configuration{}) or use other options such as http.Ok ...
 	//return Response(200, Configuration{}), nil
 
-	return apiserver.Response(http.StatusNotImplemented, nil), errors.New("PutConfigurationById method not implemented")
+	upsertedConfig, err := conf.UpsertConfigById(ctx, configId, configuration)
+	if err != nil {
+		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	return apiserver.Response(http.StatusCreated, upsertedConfig), nil
+
+	
+
+	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("PutConfigurationById method not implemented")
 }

@@ -11,8 +11,9 @@ package apiservices
 
 import (
 	"context"
-	"errors"
+	//"errors"
 	"net/http"
+	"thingdust/conf"
 	"thingdust/apiserver"
 )
 
@@ -35,5 +36,12 @@ func (s *SpacesApiService) GetSpaces(ctx context.Context, configId int64) (apise
 	//TODO: Uncomment the next line to return response Response(200, []AssetMapping{}) or use other options such as http.Ok ...
 	//return Response(200, []AssetMapping{}), nil
 
-	return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetSpaces method not implemented")
+	spaces, err := conf.GetSpaces(ctx, configId)
+	// If error then return error response
+	if err != nil {
+		// Code: http.StatusInternalServerError = 500
+		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
+	}
+	// Return successful ImplResponse with mapped spaces to given configId
+	return apiserver.Response(http.StatusOK, spaces), nil
 }
