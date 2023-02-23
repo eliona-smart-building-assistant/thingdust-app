@@ -30,11 +30,6 @@ func NewSpacesApiService() apiserver.SpacesApiServicer {
 
 // GetSpaces - List all spaces mapped to eliona assets
 func (s *SpacesApiService) GetSpaces(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
-	// TODO - update GetSpaces with the required logic for this service method.
-	// Add api_spaces_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, []AssetMapping{}) or use other options such as http.Ok ...
-	//return Response(200, []AssetMapping{}), nil
 
 	spaces, err := conf.GetSpaces(ctx, configId)
 	// If error then return error response
