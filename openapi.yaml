@@ -141,7 +141,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AssetMapping'
+                  $ref: '#/components/schemas/Space'
                   
   /dashboard-template-names:
     get:
@@ -292,10 +292,10 @@ components:
             - 42
             - 99
 
-    AssetMapping:
+    Space:
       type: object
       readOnly: true
-      description: The `AssetMapping` maps each pair of Eliona project id and thingdust space to an Eliona asset. For different Eliona projects different assets are used (see `proj_ids` in `Configuration`). The mapping is created automatically by the app and should used read only.
+      description:  The schema `Space` maps each pair of Eliona project id and thingdust space to an Eliona asset. For different Eliona projects different assets are used (see `proj_ids` in `Configuration`). The mapping is created automatically by the app and should used read only.
       properties:
         configId:
           type: integer
