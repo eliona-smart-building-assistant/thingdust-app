@@ -15,11 +15,9 @@
 
 create schema if not exists thingdust;
 
---
--- Todo: create tables and database objects necessary for this app like tables persisting configuration
---
--- .
--- This table should be made editable by eliona frontend.
+
+-- Create tables and database objects necessary for this app 
+
 create table if not exists thingdust.config
 (
     config_id           bigserial primary key,
@@ -38,7 +36,7 @@ create table if not exists thingdust.spaces
     project_id      text not null,
     asset_id        integer not null,
     space_name      text not null,
-    primary key(config_id, project_id, asset_id, space_name)
+    primary key(config_id, project_id, space_name)
 );
 
 
