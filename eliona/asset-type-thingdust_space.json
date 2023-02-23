@@ -9,7 +9,6 @@
 				"de": "Belegung",
 				"en": "Occupancy"
 			},
-            "unit": "number of people",
 			"type": "people-count"
 			
 		},
