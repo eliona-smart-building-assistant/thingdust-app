@@ -22,39 +22,55 @@ import (
 
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+
 	//"github.com/volatiletech/sqlboiler/v4/types"
 	"github.com/volatiletech/null/v8"
 )
 
-//
-// Todo: Define anything for configuration like structures and methods to read and process configuration
-//
-func GetSpaces(ctx context.Context, configId int64) ([]apiserver.AssetMapping, error) {
-	
+func GetSpaces(ctx context.Context, configId int64) ([]apiserver.Space, error) {
+
 	var mods []qm.QueryMod // Declare array of datatype Querymod, which queries can be applied to.
 
 	// configId >0 if not null
 	if configId > 0 {
-		//append this array which can be queried with the configId
 		mods = append(mods, dbthingdust.SpaceWhere.ConfigID.EQ(configId))
-		//log.Info("main", "Mods: %v", mods)
+
 	}
-	dbAssetMappings, err := dbthingdust.Spaces(mods...).All(ctx, db.Database("thingdust")) //returns space slice and error
+	dbSpaces, err := dbthingdust.Spaces(mods...).All(ctx, db.Database("thingdust")) //returns space slice and error
 	if err != nil {
 		return nil, err
 	}
-	var apiAssetMappings []apiserver.AssetMapping
+	var apiSpaces []apiserver.Space
 
-	// Convert asset mappings into apiAssetMapping type.....why?
-	for _, dbAssetMapping := range dbAssetMappings {
-		apiAssetMappings = append(apiAssetMappings, *apiAssetMappingFromDbAssetMapping(dbAssetMapping))
+	for _, dbSpaces := range dbSpaces {
+		apiSpaces = append(apiSpaces, *apiSpacesFromDbSpaces(dbSpaces))
 	}
-	return apiAssetMappings, nil
+	return apiSpaces, nil
 }
 
 
+func GetSpace(ctx context.Context, configId int64, projectId string, space_name string) (*apiserver.Space, error) {
+
+	var mods []qm.QueryMod // Declare array of datatype Querymod, which queries can be applied to.
+
+	// configId >0 if not null
+	if configId > 0 {
+		mods = append(mods, dbthingdust.SpaceWhere.ConfigID.EQ(configId))
+
+	}
+	dbSpaces, err := dbthingdust.Spaces(mods...).All(ctx, db.Database("thingdust")) //returns space slice and error
+	if err != nil {
+		return nil, err
+	}
+	var apiSpaces []apiserver.Space
+
+	for _, dbSpaces := range dbSpaces {
+		apiSpaces = append(apiSpaces, *apiSpacesFromDbSpaces(dbSpaces))
+	}
+	return apiSpaces, nil
+}
 
 // DeleteConfig reads configured endpoints to Thingdust space
 func DeleteConfig(ctx context.Context, configId int64) (int64, error) {
@@ -86,8 +102,6 @@ func GetConfigs(ctx context.Context) ([]apiserver.Configuration, error) {
 	return apiConfigs, nil
 }
 
-
-
 // InsertConfig inserts or updates
 func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserver.Configuration, error) {
 	dbConfig := dbConfigFromApiConfig(&config)
@@ -98,8 +112,6 @@ func InsertConfig(ctx context.Context, config apiserver.Configuration) (apiserve
 	config.ConfigId = dbConfig.ConfigID
 	return config, err
 }
-
-
 
 // UpsertConfigById inserts or updates
 func UpsertConfigById(ctx context.Context, configId int64, config apiserver.Configuration) (apiserver.Configuration, error) {
@@ -114,18 +126,15 @@ func UpsertConfigById(ctx context.Context, configId int64, config apiserver.Conf
 	return config, err
 }
 
+///// API to DB Mappings //////
 
-
- ///// API to DB Mappings //////
-
-
-func apiAssetMappingFromDbAssetMapping(dbAssetMapping *dbthingdust.Space) *apiserver.AssetMapping {
-	var apiAssetMapping apiserver.AssetMapping
-	apiAssetMapping.AssetId = dbAssetMapping.AssetID
-	apiAssetMapping.SpaceName = dbAssetMapping.SpaceName
-	apiAssetMapping.ConfigId = int32(dbAssetMapping.ConfigID)
-	apiAssetMapping.ProjId = dbAssetMapping.ProjectID
-	return &apiAssetMapping
+func apiSpacesFromDbSpaces(dbSpaces *dbthingdust.Space) *apiserver.Space {
+	var apiSpaces apiserver.Space
+	apiSpaces.AssetId = dbSpaces.AssetID
+	apiSpaces.SpaceName = dbSpaces.SpaceName
+	apiSpaces.ConfigId = int32(dbSpaces.ConfigID)
+	apiSpaces.ProjId = dbSpaces.ProjectID
+	return &apiSpaces
 }
 
 func apiConfigFromDbConfig(dbConfig *dbthingdust.Config) *apiserver.Configuration {

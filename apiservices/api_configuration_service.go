@@ -30,11 +30,6 @@ func NewConfigurationApiService() apiserver.ConfigurationApiServicer {
 
 // DeleteConfigurationById - Deletes an endpoint
 func (s *ConfigurationApiService) DeleteConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
-	// TODO - update DeleteConfigurationById with the required logic for this service method.
-	// Add api_configuration_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(204, {}) or use other options such as http.Ok ...
-	//return Response(204, nil),nil
 
 	count, err := conf.DeleteConfig(ctx, configId)
 	if err != nil {
@@ -45,16 +40,10 @@ func (s *ConfigurationApiService) DeleteConfigurationById(ctx context.Context, c
 	}
 	return apiserver.ImplResponse{Code: http.StatusNoContent}, err
 
-	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("DeleteConfigurationById method not implemented")
 }
 
 // GetConfigurationById - Get endpoint
 func (s *ConfigurationApiService) GetConfigurationById(ctx context.Context, configId int64) (apiserver.ImplResponse, error) {
-	// TODO - update GetConfigurationById with the required logic for this service method.
-	// Add api_configuration_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, Configuration{}) or use other options such as http.Ok ...
-	//return Response(200, Configuration{}), nil
 
 	config, err := conf.GetConfig(context.Background(), configId)
 	if err != nil {
@@ -65,16 +54,10 @@ func (s *ConfigurationApiService) GetConfigurationById(ctx context.Context, conf
 	}
 	return apiserver.Response(http.StatusOK, config), nil
 
-	// return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetConfigurationById method not implemented")
 }
 
 // GetConfigurations - Get all endpoint configurations
 func (s *ConfigurationApiService) GetConfigurations(ctx context.Context) (apiserver.ImplResponse, error) {
-	// TODO - update GetConfigurations with the required logic for this service method.
-	// Add api_configuration_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, []Configuration{}) or use other options such as http.Ok ...
-	//return Response(200, []Configuration{}), nil
 
 	configs, err := conf.GetConfigs(ctx)
 	if err != nil {
@@ -82,16 +65,11 @@ func (s *ConfigurationApiService) GetConfigurations(ctx context.Context) (apiser
 	}
 	return apiserver.Response(http.StatusOK, configs), nil
 
-	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("GetConfigurations method not implemented")
+
 }
 
 // PostConfiguration - Creates an example configuration
 func (s *ConfigurationApiService) PostConfiguration(ctx context.Context, configuration apiserver.Configuration) (apiserver.ImplResponse, error) {
-	// TODO - update PostConfiguration with the required logic for this service method.
-	// Add api_configuration_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(201, Configuration{}) or use other options such as http.Ok ...
-	//return Response(201, Configuration{}), nil
 
 	insertedConfig, err := conf.InsertConfig(ctx, configuration)
 	if err != nil {
@@ -99,16 +77,10 @@ func (s *ConfigurationApiService) PostConfiguration(ctx context.Context, configu
 	}
 	return apiserver.Response(http.StatusCreated, insertedConfig), nil
 
-	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("PostConfiguration method not implemented")
 }
 
 // PutConfigurationById - Updates an endpoint
 func (s *ConfigurationApiService) PutConfigurationById(ctx context.Context, configId int64, configuration apiserver.Configuration) (apiserver.ImplResponse, error) {
-	// TODO - update PutConfigurationById with the required logic for this service method.
-	// Add api_configuration_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, Configuration{}) or use other options such as http.Ok ...
-	//return Response(200, Configuration{}), nil
 
 	upsertedConfig, err := conf.UpsertConfigById(ctx, configId, configuration)
 	if err != nil {
@@ -116,7 +88,4 @@ func (s *ConfigurationApiService) PutConfigurationById(ctx context.Context, conf
 	}
 	return apiserver.Response(http.StatusCreated, upsertedConfig), nil
 
-	
-
-	//return apiserver.Response(http.StatusNotImplemented, nil), errors.New("PutConfigurationById method not implemented")
 }
