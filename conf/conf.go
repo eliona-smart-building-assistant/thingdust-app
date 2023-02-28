@@ -19,57 +19,56 @@ import (
 	"context"
 	"thingdust/apiserver"
 	dbthingdust "thingdust/db/thingdust"
-
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-
-	//"github.com/volatiletech/sqlboiler/v4/types"
 	"github.com/volatiletech/null/v8"
 )
 
 func GetSpaces(ctx context.Context, configId int64) ([]apiserver.Space, error) {
-
 	var mods []qm.QueryMod // Declare array of datatype Querymod, which queries can be applied to.
-
 	// configId >0 if not null
 	if configId > 0 {
 		mods = append(mods, dbthingdust.SpaceWhere.ConfigID.EQ(configId))
-
 	}
 	dbSpaces, err := dbthingdust.Spaces(mods...).All(ctx, db.Database("thingdust")) //returns space slice and error
 	if err != nil {
 		return nil, err
 	}
 	var apiSpaces []apiserver.Space
-
 	for _, dbSpaces := range dbSpaces {
 		apiSpaces = append(apiSpaces, *apiSpacesFromDbSpaces(dbSpaces))
 	}
 	return apiSpaces, nil
 }
 
-
-func GetSpace(ctx context.Context, configId int64, projectId string, space_name string) (*apiserver.Space, error) {
-
+// Return space if space already exists in app database (with assetid etc.) otherwise return nil
+func GetSpace(ctx context.Context, configId int64, projectId string, spaceName string) (*apiserver.Space, error) {
 	var mods []qm.QueryMod // Declare array of datatype Querymod, which queries can be applied to.
-
-	// configId >0 if not null
 	if configId > 0 {
 		mods = append(mods, dbthingdust.SpaceWhere.ConfigID.EQ(configId))
-
+		mods = append(mods, dbthingdust.SpaceWhere.ProjectID.EQ(projectId))
+		mods = append(mods, dbthingdust.SpaceWhere.SpaceName.EQ(spaceName))
 	}
+	//dbSpaces is an array of length 1, as configId, projectId and space_name form a primary key
 	dbSpaces, err := dbthingdust.Spaces(mods...).All(ctx, db.Database("thingdust")) //returns space slice and error
 	if err != nil {
 		return nil, err
 	}
-	var apiSpaces []apiserver.Space
-
-	for _, dbSpaces := range dbSpaces {
-		apiSpaces = append(apiSpaces, *apiSpacesFromDbSpaces(dbSpaces))
+	if len(dbSpaces)!= 1 {
+		return nil, nil
 	}
-	return apiSpaces, nil
+	return apiSpacesFromDbSpaces(dbSpaces[0]), nil
+}
+
+func InsertSpace(ctx context.Context, configId int64, projectId string, spaceName string, assetId int32) error {
+	var dbSpace dbthingdust.Space
+	dbSpace.ConfigID = configId
+	dbSpace.ProjectID = projectId
+	dbSpace.AssetID = assetId
+	dbSpace.SpaceName = spaceName
+	return dbSpace.Insert(ctx, db.Database("thingdust"), boil.Infer())
 }
 
 // DeleteConfig reads configured endpoints to Thingdust space
@@ -164,3 +163,5 @@ func dbConfigFromApiConfig(apiConfig *apiserver.Configuration) *dbthingdust.Conf
 	}
 	return &dbConfig
 }
+
+
