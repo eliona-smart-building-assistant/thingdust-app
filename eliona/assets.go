@@ -15,6 +15,30 @@
 
 package eliona
 
-//
-// Todo: Define anything for eliona like writing assets or heap data
-//
+import (
+	"fmt"
+	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
+
+)
+
+
+
+
+func CreateNewAsset(projectId string, spaceName string) (int32, error) {
+	assetId, err := asset.UpsertAsset(api.Asset{
+		ProjectId:               projectId,
+		GlobalAssetIdentifier:   spaceName,
+		Name:                    *api.NewNullableString(common.Ptr(spaceName)),
+		AssetType:               "thingdust_space",
+	})
+	if err != nil {
+		return 0, err
+	}
+	if assetId == nil {
+		return 0, fmt.Errorf("cannot create asset: %s", spaceName)
+	}
+	return *assetId, nil
+}
+
