@@ -21,77 +21,138 @@ import (
 	"thingdust/apiserver"
 	"thingdust/apiservices"
 	"thingdust/conf"
+	"thingdust/eliona"
 	"thingdust/thingdust"
+	"time"
+
+	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
-	"thingdust/eliona"
-	"time"
-	//api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 )
 
+// For each enabled configuration, processSpaces() performs Continuous Asset Creation
+// for each project_id and space pair, and writes corresponding data to each asset.
+func processSpaces(configId int64) {
+	config, spaces, err := fetchSpacesAndSetActiveState(configId)
+	if err != nil {
+		return
+	}
+	if config.ProjIds != nil {
+		for _, projId := range *config.ProjIds {
+			for spaceName := range spaces {
+				confSpace, err := getOrCreateMappingIfNecessary(config, projId, spaceName)
+				if err != nil {
+					return
+				}
+				if confSpace != nil {
+					sendData(confSpace, spaces, spaceName)
+				}
+			}
+		}
+	}
 
-// doAnything is the main app function which is called periodically
-func doAnything() {
-	// Fetch Spacs using thingdust api
-	request, err := http.NewRequestWithApiKey("https://demo.cust.prod.thingdust.io/api/v2/get_space_states", "X-API-KEY", "UEKNEYKACORWF9JMYBGLPOCPIBHNJUHYIAADBRQCEHQM2V7YJUSCVBFUNOWW" )
+}
+
+func fetchSpacesAndSetActiveState(configId int64) (*apiserver.Configuration, thingdust.Spaces, error) {
+	config, err := conf.GetConfig(context.Background(), configId)
+	if err != nil {
+		log.Error("spaces", "Error reading configuration")
+		return nil, nil, err
+	}
+	if config.Enable == nil || !*config.Enable {
+		conf.SetConfigActiveState(context.Background(), *config, false)
+		return nil, nil, err
+	}
+	conf.SetConfigActiveState(context.Background(), *config, true)
+	log.Debug("Bug configs", "Processing space with configID: %v", config.ConfigId)
+	request, err := http.NewRequestWithApiKey(config.ApiEndpoint, "X-API-KEY", config.ApiKey)
 	if err != nil {
 		log.Error("spaces", "Error with request: %v", err)
-		return
+		return nil, nil, err
 	}
 	spaces, err1 := http.Read[thingdust.Spaces](request, time.Duration(time.Duration.Seconds(1)), true)
 	if err1 != nil {
-		log.Error("spaces", "Error reading spaces: %v",err1)
-		return
+		log.Error("spaces", "Error reading spaces: %v", err1)
+		return nil, nil, err
 	}
-	for spaceName:= range spaces {
-		// Mapping exists?
-		confSpace, err2 :=conf.GetSpace(context.Background(), 1, "empty", spaceName)
-		if err2 != nil {
-			log.Error("spaces", "Error when reading spaces from configurations")
-			return
+	return config, spaces, nil
+}
+
+func sendData(confSpace *apiserver.Space, spaces thingdust.Spaces, spaceName string) {
+	err := asset.UpsertData(api.Data{
+		AssetId: confSpace.AssetId,
+		Subtype: "input",
+		Data: common.StructToMap(eliona.Data{
+			Temperature: spaces[spaceName].Temperature,
+			Occupancy:   occupancyToBool(spaces[spaceName].Occupancy),
+			Humidity:    spaces[spaceName].Humidity,
+		}),
+		AssetTypeName: *api.NewNullableString(common.Ptr("thingdust_space")),
+	})
+	if err != nil {
+		log.Error("spaces", "Error sending data %v", err)
+	}
+}
+
+func getOrCreateMappingIfNecessary(config *apiserver.Configuration, projId string, spaceName string) (*apiserver.Space, error) {
+	var confSpace *apiserver.Space
+	confSpace, err := conf.GetSpace(context.Background(), config.ConfigId, projId, spaceName)
+	if err != nil {
+		log.Error("spaces", "Error when reading spaces from configurations")
+		return nil, err
+	}
+	if confSpace == nil {
+		confSpace, err = createAssetAndMapping(projId, spaceName, config)
+		if err != nil {
+			return nil, err
 		}
-		if confSpace == nil {
-			// Create Asset Mapping between newly generated asset and space with key spaceName
-			assetId, err := eliona.CreateNewAsset("empty", spaceName)
-			if err != nil {
-				log.Error("spaces", "Error when creating new asset")
-				return
-			}
-			if err == nil {
-				log.Debug("spaces", "AssetId %v assigned to space %v", assetId, spaceName)
-			}
-			err = conf.InsertSpace(context.Background(), 1, "empty", spaceName, assetId)
-			if err != nil {
-				log.Error("spaces","Error when inserting space into database")
-				return
-			}
+	} else {
+
+		exists, err := asset.ExistAsset(confSpace.AssetId)
+		if err != nil {
+			log.Error("spaces", "Error when checking if asset already exists")
+			return nil, err
+		}
+		if exists {
+			log.Debug("spaces", "Asset already exists for space %v with AssetId %v", spaceName, confSpace.AssetId)
 		} else {
-			//Asset exists
-			exists, err := asset.ExistAsset(confSpace.AssetId)
-			if err != nil {
-				log.Error("spaces","Error when checking if asset already exists")
-				return
-			}
-			if exists {
-				log.Debug("spaces", "Asset already exists for space %v with AssetId %v", spaceName, confSpace.AssetId)
-			}else {
-				continue
-			}
-			
-
+			log.Debug("spaces", "Asset with AssetId %v does no longer exist in eliona", confSpace.AssetId)
+			return nil, nil
 		}
-		//  asset.UpsertData(api.Data{
-		// 	AssetId: confSpace.AssetId,
-		// 	Subtype: "input",
-		// 	Data: spaces[spaceName].(thingdust.Space),
-		// 	AssetTypeName: *api.NewNullableString(common.Ptr("thingdust_space")),
-		//  })
 
-		// // })
 	}
+	return confSpace, nil
+}
 
+func createAssetAndMapping(projId string, spaceName string, config *apiserver.Configuration) (*apiserver.Space, error) {
+	assetId, err := eliona.CreateNewAsset(projId, spaceName)
+	if err != nil {
+		log.Error("spaces", "Error when creating new asset")
+		return nil, err
+	}
+	log.Debug("spaces", "AssetId %v assigned to space %v", assetId, spaceName)
+	err = conf.InsertSpace(context.Background(), config.ConfigId, projId, spaceName, assetId)
+	if err != nil {
+		log.Error("spaces", "Error when inserting space into database")
+		return nil, err
+	}
+	log.Debug("spaces", "Asset with AssetId %v corresponding to space %v inserted into eliona database", assetId, spaceName)
+	confSpace, err1 := conf.GetSpace(context.Background(), config.ConfigId, projId, spaceName)
+	if err1 != nil {
+		log.Error("spaces", "Error when reading spaces from configurations")
+		return nil, err1
+	}
+	return confSpace, nil
+}
+
+func occupancyToBool(occupancy string) bool {
+	if occupancy == "occupied" {
+		return true
+	} else {
+		return false
+	}
 }
 
 // listenApi starts the API server and listen for requests
