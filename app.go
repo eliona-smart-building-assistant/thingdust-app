@@ -66,15 +66,15 @@ func fetchSpacesAndSetActiveState(configId int64) (*apiserver.Configuration, thi
 		return nil, nil, err
 	}
 	conf.SetConfigActiveState(context.Background(), *config, true)
-	log.Debug("Bug configs", "Processing space with configID: %v", config.ConfigId)
+	log.Debug("spaces", "Processing space with configID: %v", config.ConfigId)
 	request, err := http.NewRequestWithApiKey(config.ApiEndpoint, "X-API-KEY", config.ApiKey)
 	if err != nil {
 		log.Error("spaces", "Error with request: %v", err)
 		return nil, nil, err
 	}
-	spaces, err1 := http.Read[thingdust.Spaces](request, time.Duration(time.Duration.Seconds(1)), true)
-	if err1 != nil {
-		log.Error("spaces", "Error reading spaces: %v", err1)
+	spaces, err := http.Read[thingdust.Spaces](request, time.Duration(time.Duration.Seconds(1)), true)
+	if err != nil {
+		log.Error("spaces", "Error reading spaces: %v", err)
 		return nil, nil, err
 	}
 	return config, spaces, nil
@@ -139,10 +139,10 @@ func createAssetAndMapping(projId string, spaceName string, config *apiserver.Co
 		return nil, err
 	}
 	log.Debug("spaces", "Asset with AssetId %v corresponding to space %v inserted into eliona database", assetId, spaceName)
-	confSpace, err1 := conf.GetSpace(context.Background(), config.ConfigId, projId, spaceName)
-	if err1 != nil {
+	confSpace, err := conf.GetSpace(context.Background(), config.ConfigId, projId, spaceName)
+	if err != nil {
 		log.Error("spaces", "Error when reading spaces from configurations")
-		return nil, err1
+		return nil, err
 	}
 	return confSpace, nil
 }

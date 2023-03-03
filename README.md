@@ -6,7 +6,7 @@ The app collects data from configurable endpoints. Each thingdust space is autom
 
 ## Configuration
 
-The app needs environment variables and database tables for configuration. To edit the database tables the app provides an own API access.
+The app needs environment variables and database tables for configuration. To edit the database tables the app provides its own API access.
 
 
 ### Registration in Eliona ###

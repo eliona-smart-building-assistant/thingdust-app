@@ -49,13 +49,11 @@ func main() {
 	}
 	for _, config := range configs {
 		log.Debug("Bug configs", "Appending processSpaces() with configID: %v and refresh interval %v", config.ConfigId, config.RefreshInterval)
-		if config.Enable != nil && *config.Enable {
-			functions = append(functions, common.LoopWithParam(processSpaces, config.ConfigId, time.Duration(config.RefreshInterval)*time.Second))
-		}	
+			functions = append(functions, common.LoopWithParam(processSpaces, config.ConfigId, time.Duration(config.RefreshInterval)*time.Second))	
 	}
 	common.WaitFor(functions...)
 	for _, config:= range configs {
-		config.Active = false
+		conf.SetConfigActiveState(context.Background(), config, false)
 	}
 	log.Info("main", "Terminate the app.")
 }
