@@ -16,39 +16,46 @@
 package main
 
 import (
+	"context"
 	"thingdust/conf"
 	"thingdust/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 )
 
 // The main function starts the app by starting all services necessary for this app and waits
 // until all services are finished.
 func main() {
 	log.Info("main", "Starting the app.")
-
 	// Necessary to close used init resources, because db.Pool() is used in this app.
 	defer db.ClosePool()
-
 	// Init the app before the first run.
 	app.Init(db.Pool(), app.AppName(),
 		asset.InitAssetTypeFile("eliona/asset-type-thingdust_space.json"),
 		app.ExecSqlFile("conf/init.sql"),
 		conf.InitConfiguration,
 		eliona.InitEliona,
-		
 	)
-
-	// Starting the service to collect the data for this app.
-	common.WaitFor(
-		common.Loop(doAnything, time.Second),
-		listenApi,
-	)
-
+	var functions []func()
+	functions = append(functions, listenApi)
+	configs, err := conf.GetConfigs(context.Background())
+	if err != nil {
+		log.Error("Configurations", "Error retrieving configurations")
+	}
+	for _, config := range configs {
+		log.Debug("Bug configs", "Appending processSpaces() with configID: %v and refresh interval %v", config.ConfigId, config.RefreshInterval)
+			functions = append(functions, common.LoopWithParam(processSpaces, config.ConfigId, time.Duration(config.RefreshInterval)*time.Second))	
+	}
+	common.WaitFor(functions...)
+	for _, config:= range configs {
+		conf.SetConfigActiveState(config.ConfigId, false)
+	}
 	log.Info("main", "Terminate the app.")
 }
+
+
