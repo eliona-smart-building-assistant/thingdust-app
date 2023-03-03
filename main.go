@@ -53,7 +53,7 @@ func main() {
 	}
 	common.WaitFor(functions...)
 	for _, config:= range configs {
-		conf.SetConfigActiveState(context.Background(), config, false)
+		conf.SetConfigActiveState(config.ConfigId, false)
 	}
 	log.Info("main", "Terminate the app.")
 }

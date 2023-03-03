@@ -164,11 +164,11 @@ func dbConfigFromApiConfig(apiConfig *apiserver.Configuration) *dbthingdust.Conf
 	return &dbConfig
 }
 
-func SetConfigActiveState(ctx context.Context, config apiserver.Configuration, state bool) (int64, error) {
+
+func SetConfigActiveState(configID int64, state bool)(int64, error){
 	return dbthingdust.Configs(
-		dbthingdust.ConfigWhere.ConfigID.EQ(null.Int64FromPtr(&config.ConfigId).Int64),
-	).UpdateAll(ctx, db.Database("thingdust"), dbthingdust.M{
+		dbthingdust.ConfigWhere.ConfigID.EQ(null.Int64FromPtr(&configID).Int64),
+	).UpdateAll(context.Background(), db.Database("thingdust"), dbthingdust.M{
 		dbthingdust.ConfigColumns.Active: state,
 	})
 }
-
