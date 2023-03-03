@@ -30,7 +30,7 @@ func CreateNewAsset(projectId string, spaceName string) (int32, error) {
 	assetId, err := asset.UpsertAsset(api.Asset{
 		ProjectId:               projectId,
 		GlobalAssetIdentifier:   spaceName,
-		Name:                    *api.NewNullableString(common.Ptr(spaceName)),
+		Name:                    *api.NewNullableString(common.Ptr("Space "+ spaceName)),
 		AssetType:               "thingdust_space",
 	})
 	if err != nil {
