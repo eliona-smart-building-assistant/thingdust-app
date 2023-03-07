@@ -1,14 +1,11 @@
-{
- "name": "template",
- "elionaMinVersion": "9.2.0",  
+{  
   "displayName": {
-    "en": "App template",
-    "de": "App Vorlage"
+    "en": "Thingdust App",
+    "de": "Thingdust App"
   },
   "description": {
-    "en": "This template can be used to create an app stub for an Eliona environment.",
-    "de": "Diese Vorlage kann verwendet werden um eine App für Eliona zu erstellen."
+    "en": "The Thingdust app allows access to data from Thingust spaces and displays this data on the eliona dashboard.",
+    "de": "Die Thingdust App ermöglicht den Zugriff auf Daten von Thingdust Spaces und stellt die Daten auf der Eliona dashboard dar."
   },
-  "documentationUrl": "https://doc.eliona.io/eliona/referenzen/app-entwicklung",
   "useEnvironment": [ "CONNECTION_STRING", "API_ENDPOINT", "API_TOKEN" ]
 }

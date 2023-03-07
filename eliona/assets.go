@@ -17,21 +17,18 @@ package eliona
 
 import (
 	"fmt"
+
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
-
 )
-
-
-
 
 func CreateNewAsset(projectId string, spaceName string) (int32, error) {
 	assetId, err := asset.UpsertAsset(api.Asset{
-		ProjectId:               projectId,
-		GlobalAssetIdentifier:   spaceName,
-		Name:                    *api.NewNullableString(common.Ptr(spaceName)),
-		AssetType:               "thingdust_space",
+		ProjectId:             projectId,
+		GlobalAssetIdentifier: spaceName,
+		Name:                  *api.NewNullableString(common.Ptr("Space: " + spaceName)),
+		AssetType:             "thingdust_space",
 	})
 	if err != nil {
 		return 0, err
@@ -41,4 +38,3 @@ func CreateNewAsset(projectId string, spaceName string) (int32, error) {
 	}
 	return *assetId, nil
 }
-

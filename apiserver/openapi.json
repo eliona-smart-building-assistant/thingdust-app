@@ -13,7 +13,7 @@
     "url" : "http://template/v1"
   } ],
   "tags" : [ {
-    "description" : "Configuration stuff for app template",
+    "description" : "Configuration for all Thingdust endpoints",
     "externalDocs" : {
       "url" : "https://github.com/eliona-smart-building-assistant/thingdust-app"
     },
