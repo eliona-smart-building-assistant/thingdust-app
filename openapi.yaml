@@ -27,7 +27,7 @@ servers:
 
 tags:
   - name: Configuration
-    description: Configuration stuff for app template
+    description: Configuration for all Thingdust endpoints
     externalDocs:
       url: https://github.com/eliona-smart-building-assistant/thingdust-app
   - name: Version
@@ -179,7 +179,7 @@ paths:
           required: true
           schema:
             type: string
-            example: Smart Waste
+            example: Thingdust
         - name: projectId
           in: query
           description: Define the project the dashboard should be
