@@ -1,5 +1,5 @@
-# Thingdust APP
-The [Thingdust app](https://github.com/eliona-smart-building-assistant/thingdust-app) enables the communication of data from [Thingdust spaces](https://thingdust.com/) to the Eliona environment.
+# Eliona App to access Thingdust spaces
+This [Eliona app for Thingdust spaces](https://github.com/eliona-smart-building-assistant/thingdust-app) enables the communication of data from [Thingdust spaces](https://thingdust.com/) to the Eliona environment.
 
 The app collects data from configurable endpoints. Each thingdust space is automatically assigned to an eliona asset when a new endpoint is configured. Data from each space (e.g temperature, humidity and occupancy) can then be transferred to and displayed in eliona.
 

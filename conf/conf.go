@@ -88,7 +88,7 @@ func GetConfig(ctx context.Context, configId int64) (*apiserver.Configuration, e
 	return apiConfigFromDbConfig(dbConfigs[0]), nil
 }
 
-// GetConfigs reads all configured endpoints for a Hailo Digital Hub
+// GetConfigs reads all configured endpoints for Thingdust spaces
 func GetConfigs(ctx context.Context) ([]apiserver.Configuration, error) {
 	dbConfigs, err := dbthingdust.Configs().All(ctx, db.Database("thingdust"))
 	if err != nil {
