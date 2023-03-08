@@ -10,7 +10,7 @@
     "url" : "https://github.com/eliona-smart-building-assistant/thingdust-app"
   },
   "servers" : [ {
-    "url" : "http://template/v1"
+    "url" : "http://thingdust/v1"
   } ],
   "tags" : [ {
     "description" : "Configuration for all Thingdust endpoints",
