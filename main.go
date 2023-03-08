@@ -48,8 +48,8 @@ func main() {
 		log.Error("Configurations", "Error retrieving configurations")
 	}
 	for _, config := range configs {
-		log.Debug("Bug configs", "Appending processSpaces() with configID: %v and refresh interval %v", config.ConfigId, config.RefreshInterval)
-			functions = append(functions, common.LoopWithParam(processSpaces, config.ConfigId, time.Duration(config.RefreshInterval)*time.Second))	
+		log.Debug("main", "Appending processSpaces() with configID: %v and refresh interval %v", config.ConfigId, config.RefreshInterval)
+		functions = append(functions, common.LoopWithParam(processSpaces, config.ConfigId, time.Duration(config.RefreshInterval)*time.Second))	
 	}
 	common.WaitFor(functions...)
 	for _, config:= range configs {
