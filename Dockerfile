@@ -32,8 +32,10 @@ FROM alpine:3.15 AS target
 COPY --from=build /app ./
 COPY conf/*.sql ./conf/
 COPY apiserver/openapi.json /
+COPY eliona/*.json ./eliona/
 
-ENV APPNAME=template
+ENV APPNAME=thingdust
+
 
 ENV TZ=Europe/Zurich
 CMD [ "/app" ]
