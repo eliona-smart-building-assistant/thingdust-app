@@ -23,7 +23,7 @@ import (
 
 func ThingdustDashboard(projectId string) (api.Dashboard, error) {
 	dashboard := api.Dashboard{}
-	dashboard.Name = "Thingdust"
+	dashboard.Name = "Thingdust Spaces"
 	dashboard.ProjectId = projectId
 	
 
