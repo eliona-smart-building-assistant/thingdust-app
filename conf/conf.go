@@ -157,7 +157,7 @@ func dbConfigFromApiConfig(apiConfig *apiserver.Configuration) *dbthingdust.Conf
 	dbConfig.Enable = null.BoolFromPtr(apiConfig.Enable)
 	dbConfig.RefreshInterval = null.Int32FromPtr(&apiConfig.RefreshInterval)
 	dbConfig.RequestTimeout = null.Int32FromPtr(&apiConfig.RequestTimeout)
-	dbConfig.Enable = null.BoolFromPtr(&apiConfig.Active)
+	dbConfig.Active = null.BoolFromPtr(&apiConfig.Active)
 	if apiConfig.ProjIds != nil {
 		dbConfig.ProjectIds = *apiConfig.ProjIds
 	}
