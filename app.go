@@ -52,7 +52,6 @@ func processSpaces(configId int64) {
 			}
 		}
 	}
-
 }
 
 func fetchSpacesAndSetActiveState(configId int64) (*apiserver.Configuration, thingdust.Spaces, error) {
@@ -109,7 +108,6 @@ func getOrCreateMappingIfNecessary(config *apiserver.Configuration, projId strin
 			return nil, err
 		}
 	} else {
-
 		exists, err := asset.ExistAsset(confSpace.AssetId)
 		if err != nil {
 			log.Error("spaces", "Error when checking if asset already exists")
@@ -121,7 +119,6 @@ func getOrCreateMappingIfNecessary(config *apiserver.Configuration, projId strin
 			log.Debug("spaces", "Asset with AssetId %v does no longer exist in eliona", confSpace.AssetId)
 			return nil, nil
 		}
-
 	}
 	return confSpace, nil
 }
