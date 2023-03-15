@@ -39,7 +39,8 @@ func (s *VersionApiService) GetOpenAPI(ctx context.Context) (apiserver.ImplRespo
 	}
 
 	var body interface{}
-	if err := yaml.Unmarshal(bytes, &body); err != nil {
+	err = yaml.Unmarshal(bytes, &body)
+	if err != nil {
 		log.Error("services", "%s: %v", "GetOpenAPI", err)
 		return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 	}
