@@ -23,7 +23,7 @@ externalDocs:
   description: Find out more about the Thingdust app
   url: https://github.com/eliona-smart-building-assistant/thingdust-app
 servers:
-  - url: http://template/v1
+  - url: http://thingdust/v1
 
 tags:
   - name: Configuration
