@@ -40,7 +40,7 @@ func ThingdustDashboard(projectId string) (api.Dashboard, error) {
 	}
 	for _, asset := range assets {
 		widget := api.Widget{
-			WidgetTypeName: "Value",
+			WidgetTypeName: "GeneralDisplay",
 			AssetId:        asset.Id,
 			Details: map[string]interface{}{
 				"size":     1,
