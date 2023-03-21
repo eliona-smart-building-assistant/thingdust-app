@@ -24,16 +24,14 @@ To start and initialize an app in an Eliona environment, the app has to be regis
 
 - `API_TOKEN`: defines the secret to authenticate the app and access the API. 
 
-- `API_SERVER_PORT`(optional): define the port the API server listens. The default value is Port `3000`. <mark>Todo: Decide if the app needs its own API. If so, an API server have to implemented and the port have to be configurable.</mark>
+- `API_SERVER_PORT`(optional): define the port the API server listens. The default value is Port `3000`.
 
 - `LOG_LEVEL`(optional): defines the minimum level that should be [logged](https://github.com/eliona-smart-building-assistant/go-utils/blob/main/log/README.md). Not defined the default level is `info`.
 
 
 ### Database tables ###
 
-<mark>Todo: Describe the database objects the app needs for configuration</mark>
 
-<mark>Todo: Decide if the app uses its own data and which data should be accessible from outside the app. This is always the case with configuration data. If so, the app needs its own API server to provide access to this data. To define the API use an openapi.yaml file and generators to build the server stub.</mark>
 
 The app requires configuration data that remains in the database. In order to do this, the app creates its own database schema `thingdust` during initialization. To modify and handle the configuration data the app provides an API access. Take a look at the [API specification](https://github.com/eliona-smart-building-assistant/thingdust-app/blob/develop/openapi.yaml) to see how the configuration tables should be used.
 
@@ -56,7 +54,7 @@ The thingdust app provides its own API to access configuration data and other fu
 **Generation**: to generate api server stub see Generation section below.
 
 
-### Eliona assets###
+### Eliona Assets ###
 
 The app creates necessary asset types and attributes during initialization. See [eliona/asset-type-thingdust_space.json](eliona/asset-type-thingdust_space.json) for details.
 

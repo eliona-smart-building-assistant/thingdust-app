@@ -82,14 +82,15 @@ func fetchSpacesAndSetActiveState(configId int64) (*apiserver.Configuration, thi
 func sendData(confSpace *apiserver.Space, spaces thingdust.Spaces, spaceName string) {
 	err := asset.UpsertData(api.Data{
 		AssetId: confSpace.AssetId,
-		Subtype: "input",
+		Subtype: api.SUBTYPE_INPUT,
 		Data: common.StructToMap(eliona.Data{
 			Temperature: spaces[spaceName].Temperature,
-			Occupancy:   occupancyToBool(spaces[spaceName].Occupancy),
+			Occupancy:   occupancyToInt(spaces[spaceName].Occupancy),
 			Humidity:    spaces[spaceName].Humidity,
 		}),
 		AssetTypeName: *api.NewNullableString(common.Ptr("thingdust_space")),
 	})
+	log.Debug("spaces","Sending data for space %v", spaceName)
 	if err != nil {
 		log.Error("spaces", "Error sending data %v", err)
 	}
@@ -144,11 +145,11 @@ func createAssetAndMapping(projId string, spaceName string, config *apiserver.Co
 	return confSpace, nil
 }
 
-func occupancyToBool(occupancy string) bool {
+func occupancyToInt(occupancy string) int64 {
 	if occupancy == "occupied" {
-		return true
+		return 1
 	} else {
-		return false
+		return 0
 	}
 }
 
