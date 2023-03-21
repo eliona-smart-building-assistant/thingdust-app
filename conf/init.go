@@ -21,11 +21,5 @@ import (
 
 // InitConfiguration initialize the configuration of the app
 func InitConfiguration(connection db.Connection) error {
-
-	//
-	// Todo: do anything which is necessary to initialize the app like creating text data to demonstrate the configuration
-	//
-
 	return nil
-
 }

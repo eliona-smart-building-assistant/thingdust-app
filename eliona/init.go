@@ -21,11 +21,5 @@ import (
 
 // InitEliona initialize the app in aliona
 func InitEliona(connection db.Connection) error {
-
-	//
-	// Todo: do anything which is necessary to initialize the app within Eliona like creating asset types
-	//
-
 	return nil
-
 }
