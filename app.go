@@ -66,7 +66,7 @@ func fetchSpacesAndSetActiveState(configId int64) (*apiserver.Configuration, thi
 	}
 	conf.SetConfigActiveState(config.ConfigId, true)
 	log.Debug("spaces", "Processing space with configID: %v", config.ConfigId)
-	request, err := http.NewRequestWithApiKey(config.ApiEndpoint, "X-API-KEY", config.ApiKey)
+	request, err := http.NewRequestWithApiKey(config.ApiEndpoint + "/get_space_states", "X-API-KEY", config.ApiKey)
 	if err != nil {
 		log.Error("spaces", "Error with request: %v", err)
 		return nil, nil, err
