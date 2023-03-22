@@ -281,7 +281,7 @@ components:
           type: boolean
           readOnly: true
           description: Set to `true` by the app when running and to `false` when app is stopped
-          nullable: false
+          nullable: true
         projIds:
           type: array
           description: List of Eliona project ids for which this endpoint should collect data. For each project id all smart devices are automatically created as an asset in Eliona. The mapping between Eliona is stored as an asset mapping in the thingdust app and can be read with the SpaceMapping endpoint.

@@ -31,7 +31,7 @@ type Configuration struct {
 	RequestTimeout int32 `json:"requestTimeout,omitempty"`
 
 	// Set to `true` by the app when running and to `false` when app is stopped
-	Active bool `json:"active,omitempty"`
+	Active *bool `json:"active,omitempty"`
 
 	// List of Eliona project ids for which this endpoint should collect data. For each project id all smart devices are automatically created as an asset in Eliona. The mapping between Eliona is stored as an asset mapping in the thingdust app and can be read with the SpaceMapping endpoint.
 	ProjIds *[]string `json:"projIds,omitempty"`
