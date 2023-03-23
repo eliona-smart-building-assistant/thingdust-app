@@ -40,15 +40,6 @@ func CheckConfigsandSetActiveState() {
 		return
 	}
 
-	for len(configs)< 1 {
-		configs, err = conf.GetConfigs(context.Background())
-		if err != nil {
-			log.Fatal("conf", "Couldn't read configs from DB: %v", err)
-			return
-		}
-		time.Sleep(time.Second)
-	}
-
 	for _, config := range configs {
 		// Skip config if disabled and set inactive
 		if !conf.IsConfigEnabled(config) {
@@ -85,7 +76,7 @@ func CheckConfigsandSetActiveState() {
 		common.RunOnceWithParam(func(config apiserver.Configuration) {
 			log.Info("main", "Processing Spaces for Configuration with configId %d started", config.ConfigId)
 
-			processSpaces(config.ConfigId)
+			processSpaces(config)
 
 			log.Info("main", "Processing Spaces for Configuration with configId %d finished", config.ConfigId)
 
@@ -96,8 +87,8 @@ func CheckConfigsandSetActiveState() {
 
 // For each enabled configuration, processSpaces() performs Continuous Asset Creation
 // for each project_id and space pair, and writes corresponding data to each asset.
-func processSpaces(configId int64) {
-	config, spaces, err := fetchSpacesAndSetActiveState(configId)
+func processSpaces(config apiserver.Configuration) {
+	spaces, err := fetchSpaces(config)
 	if err != nil {
 		return
 	}
@@ -117,29 +108,19 @@ func processSpaces(configId int64) {
 	}
 }
 
-func fetchSpacesAndSetActiveState(configId int64) (*apiserver.Configuration, thingdust.Spaces, error) {
-	config, err := conf.GetConfig(context.Background(), configId)
-	if err != nil {
-		log.Error("spaces", "Error reading configuration")
-		return nil, nil, err
-	}
-	if config.Enable == nil || !*config.Enable {
-		conf.SetConfigActiveState(config.ConfigId, false)
-		return nil, nil, err
-	}
-	conf.SetConfigActiveState(config.ConfigId, true)
+func fetchSpaces(config apiserver.Configuration) (thingdust.Spaces, error) {
 	log.Debug("spaces", "Processing space with configID: %v", config.ConfigId)
 	request, err := http.NewRequestWithApiKey(config.ApiEndpoint + "/get_space_states", "X-API-KEY", config.ApiKey)
 	if err != nil {
 		log.Error("spaces", "Error with request: %v", err)
-		return nil, nil, err
+		return nil, err
 	}
 	spaces, err := http.Read[thingdust.Spaces](request, time.Duration(time.Duration.Seconds(1)), true)
 	if err != nil {
 		log.Error("spaces", "Error reading spaces: %v", err)
-		return nil, nil, err
+		return nil, err
 	}
-	return config, spaces, nil
+	return  spaces, nil
 }
 
 func sendData(confSpace *apiserver.Space, spaces thingdust.Spaces, spaceName string) {
@@ -159,7 +140,7 @@ func sendData(confSpace *apiserver.Space, spaces thingdust.Spaces, spaceName str
 	}
 }
 
-func getOrCreateMappingIfNecessary(config *apiserver.Configuration, projId string, spaceName string) (*apiserver.Space, error) {
+func getOrCreateMappingIfNecessary(config apiserver.Configuration, projId string, spaceName string) (*apiserver.Space, error) {
 	var confSpace *apiserver.Space
 	confSpace, err := conf.GetSpace(context.Background(), config.ConfigId, projId, spaceName)
 	if err != nil {
@@ -187,7 +168,7 @@ func getOrCreateMappingIfNecessary(config *apiserver.Configuration, projId strin
 	return confSpace, nil
 }
 
-func createAssetAndMapping(projId string, spaceName string, config *apiserver.Configuration) (*apiserver.Space, error) {
+func createAssetAndMapping(projId string, spaceName string, config apiserver.Configuration) (*apiserver.Space, error) {
 	assetId, err := eliona.CreateNewAsset(projId, spaceName)
 	if err != nil {
 		log.Error("spaces", "Error when creating new asset: %v", err)
