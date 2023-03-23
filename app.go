@@ -32,6 +32,68 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
 
+
+func CheckConfigsandSetActiveState() {
+	configs, err := conf.GetConfigs(context.Background())
+	if err != nil {
+		log.Fatal("conf", "Couldn't read configs from DB: %v", err)
+		return
+	}
+
+	for len(configs)< 1 {
+		configs, err = conf.GetConfigs(context.Background())
+		if err != nil {
+			log.Fatal("conf", "Couldn't read configs from DB: %v", err)
+			return
+		}
+		time.Sleep(time.Second)
+	}
+
+	for _, config := range configs {
+		// Skip config if disabled and set inactive
+		if !conf.IsConfigEnabled(config) {
+			if conf.IsConfigActive(config) {
+				conf.SetConfigActiveState(config.ConfigId, false)
+			}
+			continue
+		}
+
+		// Signals that this config is active
+		if !conf.IsConfigActive(config) {
+			conf.SetConfigActiveState(config.ConfigId, true)
+			log.Info("conf", "Collecting initialized with Configuration %d:\n"+
+				"API Endpoint: %s\n"+
+				"API Key: %s\n"+
+				"Enable: %t\n"+
+				"Refresh Interval: %d\n"+
+				"Request Timeout: %d\n"+
+				"Active: %t\n"+
+				"Project IDs: %v\n",
+				config.ConfigId,
+				config.ApiEndpoint,
+				config.ApiKey,
+				*config.Enable,
+				config.RefreshInterval,
+				config.RequestTimeout,
+				*config.Active,
+				config.ProjIds)
+		}
+
+		// Runs the ReadNode. If the current node is currently running, skip the execution
+		// After the execution sleeps the configured timeout. During this timeout no further
+		// process for this config is started to read the data.
+		common.RunOnceWithParam(func(config apiserver.Configuration) {
+			log.Info("main", "Processing Spaces for Configuration with configId %d started", config.ConfigId)
+
+			processSpaces(config.ConfigId)
+
+			log.Info("main", "Processing Spaces for Configuration with configId %d finished", config.ConfigId)
+
+			time.Sleep(time.Second * time.Duration(config.RefreshInterval))
+		}, config, config.ConfigId)
+	}
+}
+
 // For each enabled configuration, processSpaces() performs Continuous Asset Creation
 // for each project_id and space pair, and writes corresponding data to each asset.
 func processSpaces(configId int64) {
@@ -41,6 +103,7 @@ func processSpaces(configId int64) {
 	}
 	if config.ProjIds != nil {
 		for _, projId := range *config.ProjIds {
+			log.Debug("projectid", "ProjId: %v", projId)
 			for spaceName := range spaces {
 				confSpace, err := getOrCreateMappingIfNecessary(config, projId, spaceName)
 				if err != nil {
@@ -127,7 +190,7 @@ func getOrCreateMappingIfNecessary(config *apiserver.Configuration, projId strin
 func createAssetAndMapping(projId string, spaceName string, config *apiserver.Configuration) (*apiserver.Space, error) {
 	assetId, err := eliona.CreateNewAsset(projId, spaceName)
 	if err != nil {
-		log.Error("spaces", "Error when creating new asset")
+		log.Error("spaces", "Error when creating new asset: %v", err)
 		return nil, err
 	}
 	log.Debug("spaces", "AssetId %v assigned to space %v", assetId, spaceName)
