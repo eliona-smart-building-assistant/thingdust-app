@@ -144,7 +144,7 @@ func apiConfigFromDbConfig(dbConfig *dbthingdust.Config) *apiserver.Configuratio
 	apiConfig.Enable = &dbConfig.Enable.Bool
 	apiConfig.RefreshInterval = dbConfig.RefreshInterval.Int32
 	apiConfig.RequestTimeout = dbConfig.RequestTimeout.Int32
-	apiConfig.Active = dbConfig.Active.Bool
+	apiConfig.Active = &dbConfig.Active.Bool
 	apiConfig.ProjIds = common.Ptr[[]string](dbConfig.ProjectIds)
 	return &apiConfig
 }
@@ -157,7 +157,7 @@ func dbConfigFromApiConfig(apiConfig *apiserver.Configuration) *dbthingdust.Conf
 	dbConfig.Enable = null.BoolFromPtr(apiConfig.Enable)
 	dbConfig.RefreshInterval = null.Int32FromPtr(&apiConfig.RefreshInterval)
 	dbConfig.RequestTimeout = null.Int32FromPtr(&apiConfig.RequestTimeout)
-	dbConfig.Active = null.BoolFromPtr(&apiConfig.Active)
+	dbConfig.Active = null.BoolFromPtr(apiConfig.Active)
 	if apiConfig.ProjIds != nil {
 		dbConfig.ProjectIds = *apiConfig.ProjIds
 	}
@@ -169,5 +169,19 @@ func SetConfigActiveState(configID int64, state bool) (int64, error) {
 		dbthingdust.ConfigWhere.ConfigID.EQ(null.Int64FromPtr(&configID).Int64),
 	).UpdateAll(context.Background(), db.Database("thingdust"), dbthingdust.M{
 		dbthingdust.ConfigColumns.Active: state,
+	})
+}
+
+func IsConfigActive(config apiserver.Configuration) bool {
+	return config.Active == nil || *config.Active
+}
+
+func IsConfigEnabled(config apiserver.Configuration) bool {
+	return config.Enable == nil || *config.Enable
+}
+
+func SetAllConfigsInactive(ctx context.Context) (int64, error) {
+	return dbthingdust.Configs().UpdateAllG(ctx, dbthingdust.M{
+		dbthingdust.ConfigColumns.Active: false,
 	})
 }

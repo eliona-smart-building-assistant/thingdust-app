@@ -41,19 +41,14 @@ func main() {
 		conf.InitConfiguration,
 		eliona.InitEliona,
 	)
-	var functions []func()
-	functions = append(functions, listenApi)
-	configs, err := conf.GetConfigs(context.Background())
+	common.WaitForWithOs(
+		common.Loop(CheckConfigsandSetActiveState, time.Second),
+		listenApi,
+	)
+	// At the end set all configuration inactive
+	_, err := conf.SetAllConfigsInactive(context.Background())
 	if err != nil {
-		log.Error("Configurations", "Error retrieving configurations")
-	}
-	for _, config := range configs {
-		log.Debug("main", "Appending processSpaces() with configID: %v and refresh interval %v", config.ConfigId, config.RefreshInterval)
-		functions = append(functions, common.LoopWithParam(processSpaces, config.ConfigId, time.Duration(config.RefreshInterval)*time.Second))	
-	}
-	common.WaitFor(functions...)
-	for _, config:= range configs {
-		conf.SetConfigActiveState(config.ConfigId, false)
+		log.Error("conf", "setting all configs inactive: %v", err)
 	}
 	log.Info("main", "Terminate the app.")
 }
