@@ -197,15 +197,7 @@ func occupancyToInt(occupancy string) int64 {
 	}
 }
 
-// listenApi starts the API server and listen for requests
-func listenApi() {
-	http.ListenApiWithOs(&nethttp.Server{Addr: ":" + common.Getenv("API_SERVER_PORT", "3000"), Handler: apiserver.NewRouter(
-		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
-		apiserver.NewVersionApiController(apiservices.NewVersionApiService()),
-		apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
-		apiserver.NewSpacesApiController(apiservices.NewSpacesApiService()),
-	)})
-}
+
 func listenApiRequests() {
 	err := nethttp.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), apiserver.NewRouter(
 		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
