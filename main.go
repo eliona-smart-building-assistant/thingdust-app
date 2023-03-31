@@ -26,14 +26,20 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 // The main function starts the app by starting all services necessary for this app and waits
 // until all services are finished.
 func main() {
 	log.Info("main", "Starting the app.")
+	
+	database := db.Database(app.AppName())
+	defer database.Close()
+	boil.SetDB(database)
 	// Necessary to close used init resources, because db.Pool() is used in this app.
 	defer db.ClosePool()
+
 	// Init the app before the first run.
 	app.Init(db.Pool(), app.AppName(),
 		asset.InitAssetTypeFile("eliona/asset-type-thingdust_space.json"),
@@ -43,14 +49,17 @@ func main() {
 	)
 	common.WaitForWithOs(
 		common.Loop(CheckConfigsandSetActiveState, time.Second),
-		listenApi,
+		listenApiRequests,
 	)
+	
 	// At the end set all configuration inactive
 	_, err := conf.SetAllConfigsInactive(context.Background())
 	if err != nil {
 		log.Error("conf", "setting all configs inactive: %v", err)
 	}
+	
 	log.Info("main", "Terminate the app.")
+
 }
 
 
