@@ -11,9 +11,9 @@ package apiservices
 
 import (
 	"context"
-	"thingdust/eliona"
 	"net/http"
 	"thingdust/apiserver"
+	"thingdust/eliona"
 )
 
 // CustomizationApiService is a service that implements the logic for the CustomizationApiServicer
@@ -38,9 +38,4 @@ func (s *CustomizationApiService) GetDashboardTemplateByName(ctx context.Context
 	} else {
 		return apiserver.ImplResponse{Code: http.StatusNotFound}, nil
 	}
-}
-
-// GetDashboardTemplateNames - List available dashboard templates
-func (s *CustomizationApiService) GetDashboardTemplateNames(ctx context.Context) (apiserver.ImplResponse, error) {
-	return apiserver.Response(http.StatusOK, []string{"Thingdust"}), nil
 }
