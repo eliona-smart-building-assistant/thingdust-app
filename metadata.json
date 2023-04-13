@@ -4,7 +4,7 @@
     "de": "Thingdust App"
   },
   "description": {
-    "en": "The Thingdust app allows access to data from Thingust spaces and displays this data on the eliona dashboard.",
+    "en": "The Thingdust app allows access to data from Thingdust spaces and displays this data on the eliona dashboard.",
     "de": "Die Thingdust App ermöglicht den Zugriff auf Daten von Thingdust Spaces und stellt die Daten auf der Eliona dashboard dar."
   },
   "useEnvironment": [ "CONNECTION_STRING", "API_ENDPOINT", "API_TOKEN" ]
