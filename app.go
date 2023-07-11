@@ -17,6 +17,7 @@ package main
 
 import (
 	"context"
+	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
 	nethttp "net/http"
 	"thingdust/apiserver"
 	"thingdust/apiservices"
@@ -31,7 +32,6 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
-
 
 func CheckConfigsandSetActiveState() {
 	configs, err := conf.GetConfigs(context.Background())
@@ -110,7 +110,7 @@ func processSpaces(config apiserver.Configuration) {
 
 func fetchSpaces(config apiserver.Configuration) (thingdust.Spaces, error) {
 	log.Debug("spaces", "Processing space with configID: %v", config.ConfigId)
-	request, err := http.NewRequestWithApiKey(config.ApiEndpoint + "/get_space_states", "X-API-KEY", config.ApiKey)
+	request, err := http.NewRequestWithApiKey(config.ApiEndpoint+"/get_space_states", "X-API-KEY", config.ApiKey)
 	if err != nil {
 		log.Error("spaces", "Error with request: %v", err)
 		return nil, err
@@ -120,7 +120,7 @@ func fetchSpaces(config apiserver.Configuration) (thingdust.Spaces, error) {
 		log.Error("spaces", "Error reading spaces: %v", err)
 		return nil, err
 	}
-	return  spaces, nil
+	return spaces, nil
 }
 
 func sendData(confSpace *apiserver.Space, spaces thingdust.Spaces, spaceName string) {
@@ -134,7 +134,7 @@ func sendData(confSpace *apiserver.Space, spaces thingdust.Spaces, spaceName str
 		}),
 		AssetTypeName: *api.NewNullableString(common.Ptr("thingdust_space")),
 	})
-	log.Debug("spaces","Sending data for space %v", spaceName)
+	log.Debug("spaces", "Sending data for space %v", spaceName)
 	if err != nil {
 		log.Error("spaces", "Error sending data %v", err)
 	}
@@ -197,12 +197,12 @@ func occupancyToInt(occupancy string) int64 {
 	}
 }
 
-
 func listenApiRequests() {
-	err := nethttp.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), apiserver.NewRouter(
-		apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
-		apiserver.NewVersionApiController(apiservices.NewVersionApiService()),
-		apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
-	))
+	err := nethttp.ListenAndServe(":"+common.Getenv("API_SERVER_PORT", "3000"), utilshttp.NewCORSEnabledHandler(
+		apiserver.NewRouter(
+			apiserver.NewConfigurationApiController(apiservices.NewConfigurationApiService()),
+			apiserver.NewVersionApiController(apiservices.NewVersionApiService()),
+			apiserver.NewCustomizationApiController(apiservices.NewCustomizationApiService()),
+		)))
 	log.Fatal("main", "Error in API Server: %v", err)
 }
