@@ -1,4 +1,5 @@
-{  
+{
+  "name": "thingdust",
   "displayName": {
     "en": "Thingdust App",
     "de": "Thingdust App"
@@ -10,7 +11,8 @@
   "dashboardTemplateNames": [
     "Thingdust"
   ],
-  "apiSpecificationPath": "/v1/version/openapi.json",
+  "apiUrl": "v1",
+  "apiSpecificationPath": "/version/openapi.json",
   "documentationUrl": "https://doc.eliona.io/collection/eliona-apps/externe-apps/thingdust",
   "useEnvironment": [ "CONNECTION_STRING", "API_ENDPOINT", "API_TOKEN" ]
 }
