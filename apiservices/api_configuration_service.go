@@ -65,7 +65,6 @@ func (s *ConfigurationApiService) GetConfigurations(ctx context.Context) (apiser
 	}
 	return apiserver.Response(http.StatusOK, configs), nil
 
-
 }
 
 // PostConfiguration - Creates an example configuration

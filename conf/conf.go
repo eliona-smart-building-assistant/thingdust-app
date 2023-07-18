@@ -17,13 +17,13 @@ package conf
 
 import (
 	"context"
-	"thingdust/apiserver"
-	dbthingdust "thingdust/db/thingdust"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
+	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.com/volatiletech/null/v8"
+	"thingdust/apiserver"
+	dbthingdust "thingdust/db/thingdust"
 )
 
 func GetSpaces(ctx context.Context, configId int64) ([]apiserver.Space, error) {
@@ -56,7 +56,7 @@ func GetSpace(ctx context.Context, configId int64, projectId string, spaceName s
 	if err != nil {
 		return nil, err
 	}
-	if len(dbSpaces)!= 1 {
+	if len(dbSpaces) != 1 {
 		return nil, nil
 	}
 	return apiSpacesFromDbSpaces(dbSpaces[0]), nil
