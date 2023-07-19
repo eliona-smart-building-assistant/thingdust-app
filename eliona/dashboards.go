@@ -25,7 +25,6 @@ func ThingdustDashboard(projectId string) (api.Dashboard, error) {
 	dashboard := api.Dashboard{}
 	dashboard.Name = "Thingdust Spaces"
 	dashboard.ProjectId = projectId
-	
 
 	dashboard.Widgets = []api.Widget{}
 

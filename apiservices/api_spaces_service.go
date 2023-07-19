@@ -13,8 +13,8 @@ import (
 	"context"
 	//"errors"
 	"net/http"
-	"thingdust/conf"
 	"thingdust/apiserver"
+	"thingdust/conf"
 )
 
 // SpacesApiService is a service that implements the logic for the SpacesApiServicer

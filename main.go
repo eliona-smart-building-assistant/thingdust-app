@@ -33,7 +33,7 @@ import (
 // until all services are finished.
 func main() {
 	log.Info("main", "Starting the app.")
-	
+
 	database := db.Database(app.AppName())
 	defer database.Close()
 	boil.SetDB(database)
@@ -51,15 +51,13 @@ func main() {
 		common.Loop(CheckConfigsandSetActiveState, time.Second),
 		listenApiRequests,
 	)
-	
+
 	// At the end set all configuration inactive
 	_, err := conf.SetAllConfigsInactive(context.Background())
 	if err != nil {
 		log.Error("conf", "setting all configs inactive: %v", err)
 	}
-	
+
 	log.Info("main", "Terminate the app.")
 
 }
-
-
