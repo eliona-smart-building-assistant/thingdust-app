@@ -1,5 +1,6 @@
 {
   "name": "thingdust",
+  "elionaMinVersion": "v10.1.0",  
   "displayName": {
     "en": "Thingdust App",
     "de": "Thingdust App"
