@@ -2,8 +2,8 @@
   "name": "thingdust",
   "elionaMinVersion": "v10.1.0",  
   "displayName": {
-    "en": "Thingdust App",
-    "de": "Thingdust App"
+    "en": "Thingdust",
+    "de": "Thingdust"
   },
   "description": {
     "en": "The Thingdust app allows access to data from Thingdust spaces and displays this data on the eliona dashboard.",
