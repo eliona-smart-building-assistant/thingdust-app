@@ -17,6 +17,8 @@ package main
 
 import (
 	"context"
+	"github.com/eliona-smart-building-assistant/go-eliona/app"
+	"github.com/eliona-smart-building-assistant/go-utils/db"
 	utilshttp "github.com/eliona-smart-building-assistant/go-utils/http"
 	nethttp "net/http"
 	"thingdust/apiserver"
@@ -32,6 +34,22 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/http"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
 )
+
+func initialization() {
+	ctx := context.Background()
+
+	// Necessary to close used init resources
+	conn := db.NewInitConnectionWithContextAndApplicationName(ctx, app.AppName())
+	defer conn.Close(ctx)
+
+	// Init the app before the first run.
+	app.Init(db.Pool(), app.AppName(),
+		asset.InitAssetTypeFile("eliona/asset-type-thingdust_space.json"),
+		app.ExecSqlFile("conf/init.sql"),
+		conf.InitConfiguration,
+		eliona.InitEliona,
+	)
+}
 
 func CheckConfigsandSetActiveState() {
 	configs, err := conf.GetConfigs(context.Background())

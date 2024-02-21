@@ -18,11 +18,9 @@ package main
 import (
 	"context"
 	"thingdust/conf"
-	"thingdust/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
-	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 	"github.com/eliona-smart-building-assistant/go-utils/log"
@@ -37,16 +35,17 @@ func main() {
 	database := db.Database(app.AppName())
 	defer database.Close()
 	boil.SetDB(database)
-	// Necessary to close used init resources, because db.Pool() is used in this app.
-	defer db.ClosePool()
 
-	// Init the app before the first run.
-	app.Init(db.Pool(), app.AppName(),
-		asset.InitAssetTypeFile("eliona/asset-type-thingdust_space.json"),
-		app.ExecSqlFile("conf/init.sql"),
-		conf.InitConfiguration,
-		eliona.InitEliona,
-	)
+	// Set the database logging level.
+	if log.Lev() >= log.TraceLevel {
+		boil.DebugMode = true
+		boil.DebugWriter = log.GetWriter(log.TraceLevel, "database")
+	}
+
+	// Initialize the app
+	initialization()
+
+	// Starting the service to collect the data for each configured Hailo Smart Hub.
 	common.WaitForWithOs(
 		common.Loop(CheckConfigsandSetActiveState, time.Second),
 		listenApiRequests,
