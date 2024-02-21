@@ -29,7 +29,7 @@ func ThingdustDashboard(projectId string) (api.Dashboard, error) {
 	dashboard.Widgets = []api.Widget{}
 
 	// Process spaces
-	assets, _, err := client.NewClient().AssetsApi.
+	assets, _, err := client.NewClient().AssetsAPI.
 		GetAssets(client.AuthenticationContext()).
 		AssetTypeName("thingdust_space").
 		ProjectId(projectId).
