@@ -43,7 +43,7 @@ func initialization() {
 	defer conn.Close(ctx)
 
 	// Init the app before the first run.
-	app.Init(db.Pool(), app.AppName(),
+	app.Init(conn, app.AppName(),
 		asset.InitAssetTypeFile("eliona/asset-type-thingdust_space.json"),
 		app.ExecSqlFile("conf/init.sql"),
 		conf.InitConfiguration,
